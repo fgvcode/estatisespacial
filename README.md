@@ -13,13 +13,13 @@ A análise baseia-se em dados de preços medianos de imóveis em Glasgow por zon
 
 ### Dicionário de Variáveis
 As colunas do conjunto de dados incluem:
-* [cite_start]**IZ**: Identificador único de cada zona intermediária[cite: 10].
-* [cite_start]**preco**: Preço mediano dos imóveis[cite: 11].
-* [cite_start]**crime**: Taxa de criminalidade por 10.000 pessoas[cite: 13].
-* [cite_start]**comodos**: Número mediano de cômodos no imóvel[cite: 13].
-* [cite_start]**vendas_propriedades**: Porcentagem de imóveis vendidos no ano[cite: 14].
-* [cite_start]**temp_shopping**: Tempo médio de condução até um shopping center (minutos)[cite: 15].
-* [cite_start]**tipo**: Tipo predominante de imóvel[cite: 17].
+* **IZ**: Identificador único de cada zona intermediária[cite: 10].
+* **preco**: Preço mediano dos imóveis[cite: 11].
+* **crime**: Taxa de criminalidade por 10.000 pessoas[cite: 13].
+* **comodos**: Número mediano de cômodos no imóvel[cite: 13].
+* **vendas_propriedades**: Porcentagem de imóveis vendidos no ano[cite: 14].
+* **temp_shopping**: Tempo médio de condução até um shopping center (minutos)[cite: 15].
+* **tipo**: Tipo predominante de imóvel[cite: 17].
 
 ---
 
