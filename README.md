@@ -14,23 +14,23 @@ A análise baseia-se em dados de preços medianos de imóveis em Glasgow por zon
 ### Dicionário de Variáveis
 As colunas do conjunto de dados incluem:
 * **IZ**: Identificador único de cada zona intermediária[cite: 10].
-* **preco**: Preço mediano dos imóveis[cite: 11].
-* **crime**: Taxa de criminalidade por 10.000 pessoas[cite: 13].
-* **comodos**: Número mediano de cômodos no imóvel[cite: 13].
-* **vendas_propriedades**: Porcentagem de imóveis vendidos no ano[cite: 14].
-* **temp_shopping**: Tempo médio de condução até um shopping center (minutos)[cite: 15].
-* **tipo**: Tipo predominante de imóvel[cite: 17].
+* **preco**: Preço mediano dos imóveis.
+* **crime**: Taxa de criminalidade por 10.000 pessoas.
+* **comodos**: Número mediano de cômodos no imóvel.
+* **vendas_propriedades**: Porcentagem de imóveis vendidos no ano.
+* **temp_shopping**: Tempo médio de condução até um shopping center (minutos).
+* **tipo**: Tipo predominante de imóvel.
 
 ---
 
 ## 📝 Questões e Requisitos
-[cite_start]Ao realizar as análises, para cada teste de hipótese, deve-se apresentar a hipótese nula ($H_0$), a alternativa ($H_1$) e o nível de significância adotado[cite: 19].
+Ao realizar as análises, para cada teste de hipótese, deve-se apresentar a hipótese nula ($H_0$), a alternativa ($H_1$) e o nível de significância adotado.
 
-1. [cite_start]**Mapa Coroplético Estático**: Criar mapa para a variável `preco` com 5 faixas de amplitudes iguais[cite: 21].
-2. [cite_start]**Mapa Coroplético Interativo**: Criar mapa para a variável `preco` com 8 faixas baseadas em quantis[cite: 22].
-3. [cite_start]**Matriz de Vizinhança**: Definir a matriz com base no critério de contiguidade (bordas comuns)[cite: 23].
-4. [cite_start]**Autocorrelação Global**: Avaliar a existência de autocorrelação global (significância de 5%)[cite: 24].
-5. [cite_start]**Autocorrelação Local**: Avaliar a autocorrelação local e gerar mapa de clusters significativos[cite: 25].
+1. **Mapa Coroplético Estático**: Criar mapa para a variável `preco` com 5 faixas de amplitudes iguais.
+2. **Mapa Coroplético Interativo**: Criar mapa para a variável `preco` com 8 faixas baseadas em quantis.
+3. **Matriz de Vizinhança**: Definir a matriz com base no critério de contiguidade (bordas comuns.
+4. **Autocorrelação Global**: Avaliar a existência de autocorrelação global (significância de 5%).
+5. **Autocorrelação Local**: Avaliar a autocorrelação local e gerar mapa de clusters significativos.
 
 ---
 
