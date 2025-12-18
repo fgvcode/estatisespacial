@@ -1,6 +1,6 @@
 # Trabalho Final: Estatística Espacial
 
-Este repositório contém o desenvolvimento do Trabalho Final da disciplina de **Estatística Espacial**[cite: 2]. [cite_start]O objetivo é realizar uma análise de dados espaciais sobre os preços de imóveis em Glasgow, Escócia, utilizando o software R.
+Este repositório contém o desenvolvimento do Trabalho Final da disciplina de **Estatística Espacial**. O objetivo é realizar uma análise de dados espaciais sobre os preços de imóveis em Glasgow, Escócia, utilizando o software R.
 
 ---
 
@@ -8,8 +8,8 @@ Este repositório contém o desenvolvimento do Trabalho Final da disciplina de *
 A análise baseia-se em dados de preços medianos de imóveis em Glasgow por zonas intermediárias (total de 270 zonas) referentes ao ano de 2008.
 
 ### Arquivos de Base
-* [cite_start]`preco_propriedade.xlsx`: Base de dados principal[cite: 8].
-* [cite_start]`Glasgow.shp`: Arquivo de malha geográfica (shapefile)[cite: 18].
+* [cite_start]`preco_propriedade.xlsx`: Base de dados principal.
+* [cite_start]`Glasgow.shp`: Arquivo de malha geográfica (shapefile).
 
 ### Dicionário de Variáveis
 As colunas do conjunto de dados incluem:
