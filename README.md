@@ -8,7 +8,7 @@ Este repositório contém um projeto de estatística espacial desenvolvido para 
 - `Trabalho Final.pdf`: Descritivo oficial da atividade.
 - `relatorio_atividade.Rmd`: Arquivo R Markdown com a análise completa e interpretações.
 - `trabalho_final.R`: Script R com a lógica de processamento e cálculos estatísticos.
-- `Trabalho Final.pdf`: Descritivo oficial da atividade.
+  
 
 ## 🛠️ Metodologia Aplicada
 
@@ -17,7 +17,6 @@ A análise segue o seguinte fluxo estatístico:
 2. **Matriz de Vizinhança:** Criação de matriz de contiguidade (Critério Queen).
 3. **Moran Global:** Teste de hipótese para verificar se existe autocorrelação espacial (clumping) nos preços.
 4. **Moran Local (LISA):** Identificação de clusters espaciais (High-High, Low-Low).
-
 
 
 ## 🚀 Como Executar
