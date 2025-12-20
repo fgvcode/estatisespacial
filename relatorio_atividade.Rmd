@@ -95,3 +95,4 @@ tm_shape(glasgow_dados) +
     fill.legend = tm_legend(title = "P-valor < 0.05")
   ) +
   tm_layout(main.title = "Questão 5: Mapa de Significância (LISA)", frame = FALSE)
+``` 
