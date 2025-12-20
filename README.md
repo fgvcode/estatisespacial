@@ -1,39 +1,26 @@
-# Trabalho Final: Estatística Espacial
+# Análise Espacial de Preços de Imóveis em Glasgow
 
-Este repositório contém o desenvolvimento do Trabalho Final da disciplina de **Estatística Espacial**. O objetivo é realizar uma análise de dados espaciais sobre os preços de imóveis em Glasgow, Escócia, utilizando o software R.
+Este repositório contém um projeto de estatística espacial desenvolvido para a disciplina de Estatística III. O objetivo é analisar a dependência espacial dos preços das propriedades em Glasgow utilizando o Índice de Moran.
 
----
+## 📂 Estrutura do Repositório
 
-## 📊 Descrição dos Dados
-A análise baseia-se em dados de preços medianos de imóveis em Glasgow por zonas intermediárias (total de 270 zonas) referentes ao ano de 2008.
+- `dados/`: Contém os arquivos Shapefile (.shp, .shx, .dbf, .prj) e a planilha de preços (.xlsx).
+- `relatorio_atividade.Rmd`: Arquivo R Markdown com a análise completa e interpretações.
+- `trabalho_final.R`: Script R com a lógica de processamento e cálculos estatísticos.
+- `Trabalho Final (1).pdf`: Descritivo oficial da atividade.
 
-### Arquivos de Base
-* `preco_propriedade.xlsx`: Base de dados principal.
-* `Glasgow.shp`: Arquivo de malha geográfica (shapefile).
+## 🛠️ Metodologia Aplicada
 
-### Dicionário de Variáveis
-As colunas do conjunto de dados incluem:
-* **IZ**: Identificador único de cada zona intermediária[cite: 10].
-* **preco**: Preço mediano dos imóveis.
-* **crime**: Taxa de criminalidade por 10.000 pessoas.
-* **comodos**: Número mediano de cômodos no imóvel.
-* **vendas_propriedades**: Porcentagem de imóveis vendidos no ano.
-* **temp_shopping**: Tempo médio de condução até um shopping center (minutos).
-* **tipo**: Tipo predominante de imóvel.
+A análise segue o seguinte fluxo estatístico:
+1. **Unificação de Dados:** Cruzamento entre dados censitários (Intermediate Zones) e preços de venda.
+2. **Matriz de Vizinhança:** Criação de matriz de contiguidade (Critério Queen).
+3. **Moran Global:** Teste de hipótese para verificar se existe autocorrelação espacial (clumping) nos preços.
+4. **Moran Local (LISA):** Identificação de clusters espaciais (High-High, Low-Low).
 
----
 
-## 📝 Questões e Requisitos
-Ao realizar as análises, para cada teste de hipótese, deve-se apresentar a hipótese nula ($H_0$), a alternativa ($H_1$) e o nível de significância adotado.
 
-1. **Mapa Coroplético Estático**: Criar mapa para a variável `preco` com 5 faixas de amplitudes iguais.
-2. **Mapa Coroplético Interativo**: Criar mapa para a variável `preco` com 8 faixas baseadas em quantis.
-3. **Matriz de Vizinhança**: Definir a matriz com base no critério de contiguidade (bordas comuns.
-4. **Autocorrelação Global**: Avaliar a existência de autocorrelação global (significância de 5%).
-5. **Autocorrelação Local**: Avaliar a autocorrelação local e gerar mapa de clusters significativos.
+## 🚀 Como Executar
 
----
-
-## 🛠️ Instruções de Execução
-1. Certifique-se de que os arquivos `.xlsx` e `.shp` estejam no mesmo diretório de trabalho.
-2. Utilize o script `.R` para reproduzir as análises e gerar o relatório final.
+1. Clone o repositório.
+2. Certifique-se de que os pacotes `sf`, `readxl`, `spdep`, `tidyverse` e `tmap` estão instalados.
+3. Execute o script `trabalho_final.R` ou faça o "Knit" do `relatorio_atividade.Rmd`.
