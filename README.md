@@ -4,10 +4,11 @@ Este repositório contém um projeto de estatística espacial desenvolvido para 
 
 ## 📂 Estrutura do Repositório
 
-- `dados/`: Contém os arquivos Shapefile (.shp, .shx, .dbf, .prj) e a planilha de preços (.xlsx).
+- `dados/`: Contém os arquivos Shapefile (.shp, .shx, .dbf, .prj), planilha de preços (.xlsx) e Trabalho Final.pdf.
+- `Trabalho Final.pdf`: Descritivo oficial da atividade.
 - `relatorio_atividade.Rmd`: Arquivo R Markdown com a análise completa e interpretações.
 - `trabalho_final.R`: Script R com a lógica de processamento e cálculos estatísticos.
-- `Trabalho Final.pdf`: Descritivo oficial da atividade que está na pasta dados.
+- `Trabalho Final.pdf`: Descritivo oficial da atividade.
 
 ## 🛠️ Metodologia Aplicada
 
