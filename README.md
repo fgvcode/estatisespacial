@@ -1,6 +1,6 @@
 # Análise Espacial de Preços de Imóveis em Glasgow
 
-Este repositório contém um projeto de estatística espacial desenvolvido para a disciplina de Estatística III. O objetivo é analisar a dependência espacial dos preços das propriedades em Glasgow utilizando o Índice de Moran.
+Este repositório contém um projeto de estatística espacial desenvolvido para a disciplina de Estatística Espacial. O objetivo é analisar a dependência espacial dos preços das propriedades em Glasgow utilizando o Índice de Moran.
 
 ## 📂 Estrutura do Repositório
 
