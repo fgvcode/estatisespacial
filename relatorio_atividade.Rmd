@@ -1,5 +1,63 @@
 ---
 title: "Trabalho Final - Estatística Espacial"
+author: "Alexandre Novaes Dornelas, José Carlos Maria Júnior, Thiago Itamar Plum, Walter Alves Moreira Barbosa dos Santos, William Xavier dos Santos, Ygor Silva Nascimento Coelho"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+# Desenvolvimento do Trabalho
+
+Neste bloco único, realizamos o carregamento das bibliotecas, a importação dos dados da pasta **dados/**, a junção das bases e a geração dos mapas das Questões 1 e 2.
+
+```{r processamento_total, echo=TRUE, message=FALSE, warning=FALSE}
+# 1. CARREGAMENTO DE BIBLIOTECAS
+library(sf)         
+library(readxl)
+library(dplyr)      
+library(ggplot2)    
+library(tmap)
+library(stringr)
+
+# 2. IMPORTAÇÃO DOS DADOS (PASTA DADOS)
+# Certifique-se de que os arquivos estão na pasta 'dados' no GitHub
+prices_df <- read_excel("dados/base preco propriedade.xlsx")
+glasgow_sf <- st_read("dados/Glasgow.shp", quiet = TRUE)
+
+# 3. JUNÇÃO E TRATAMENTO
+# Unindo os preços ao shapefile e criando rótulos
+glasgow_dados <- left_join(prices_df, glasgow_sf, by = c("IZ" = "IZ")) %>% 
+                 st_as_sf()
+
+glasgow_dados <- glasgow_dados %>% 
+  mutate(rotulo = str_c(name, " - £", preco))
+
+# 4. QUESTÃO 1: MAPA ESTÁTICO (AMPLITUDES IGUAIS)
+tmap_mode("plot")
+
+tm_shape(glasgow_dados) +
+  tm_polygons(
+    fill = "preco",
+    fill.scale = tm_scale_intervals(style = "equal", n = 5, values = "brewer.greens"),
+    fill.legend = tm_legend(title = "Preço Médio (Amplitudes Iguais)")
+  ) +
+  tm_layout(frame = FALSE, main.title = "Questão 1: Distribuição de Preços")
+
+# 5. QUESTÃO 2: MAPA INTERATIVO (QUANTIS)
+tmap_mode("view")
+
+tm_shape(glasgow_dados) + 
+  tm_polygons(
+    fill = "preco",
+    fill.scale = tm_scale_intervals(style = "quantile", n = 8, values = "matplotlib.blues"),
+    fill.legend = tm_legend(title = "Preço"),
+    id = "rotulo",
+    popup.vars = c("Área" = "name", "Preço Mediano" = "preco"),
+    lwd = 0.25
+  )--- ```
+title: "Trabalho Final - Estatística Espacial"
 author: "Alexandre Novaes Dornelas  \nJosé Carlos Maria Júnior  \nThiago Itamar Plum
   \ \nWalter Alves Moreira Barbosa dos Santos  \nWilliam Xavier dos Santos  \nYgor Silva Nascimento Coelho"
 output: 
