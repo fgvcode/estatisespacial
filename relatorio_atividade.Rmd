@@ -12,15 +12,15 @@ output:
     number_sections: true
 ---
 
-# Desenvolvimento do Trabalho {.tabset .tabset-fade}
+# Desenvolvimento do Trabalho {.tabset .tabset-fade} 
 
 Neste relatório, apresentamos a análise espacial dos preços de propriedades em Glasgow. O objetivo é identificar padrões de agrupamento e dependência espacial utilizando indicadores globais e locais.
 
-## Preparação e Dados
+## Processamento e Análise
 
-Nesta seção, realizamos o carregamento do ambiente técnico e a unificação das bases de dados geográficos e tabulares.
+Nesta seção, realizamos o carregamento do ambiente técnico, a unificação das bases de dados e a execução de todos os testes estatísticos e mapas solicitados.
 
-```{r setup_dados, echo=TRUE, message=FALSE, warning=FALSE}
+```{r processamento_total, echo=TRUE, message=FALSE, warning=FALSE}
 # 1. CARREGAMENTO DE BIBLIOTECAS
 library(sf)          
 library(readxl)
@@ -42,11 +42,11 @@ glasgow_dados <- left_join(x = glasgow_sf,
                            by = c("IZ" = "IZ")) %>%
                  mutate(rotulo = str_c(name, " - £", preco))
 
-# Visualização da estrutura final
+# Visualização da estrutura inicial
 head(glasgow_dados)
 
 # 4. QUESTÃO 1: MAPA ESTÁTICO (AMPLITUDES IGUAIS)
-# Este mapa divide os preços em 5 faixas com intervalos de valores idênticos, útil para observar extremos de riqueza e pobreza de forma absoluta.
+# Este mapa divide os preços em 5 faixas com intervalos de valores idênticos.
 tmap_mode("plot")
 tm_shape(shp = glasgow_dados) +
   tm_polygons(
@@ -57,7 +57,7 @@ tm_shape(shp = glasgow_dados) +
   tm_layout(frame = FALSE, main.title = "Q1: Distribuição de Preços por Intervalos Iguais")
 
 # 5. QUESTÃO 2: MAPA INTERATIVO (QUANTIS)
-# O mapa interativo utiliza 8 faixas baseadas em quantis, garantindo que cada cor represente um número similar de áreas, facilitando a visualização da distribuição relativa.
+# O mapa interativo utiliza 8 faixas baseadas em quantis para visualização da distribuição relativa.
 tmap_mode("view") 
 tm_shape(shp = glasgow_dados) + 
   tm_polygons(
@@ -70,21 +70,25 @@ tm_shape(shp = glasgow_dados) +
   )
 
 # 6. QUESTÃO 3: MATRIZ DE VIZINHANÇA
-# Definimos a vizinhança pelo critério "Queen" (áreas que se tocam em qualquer ponto). A matriz de pesos é padronizada pela linha (estilo W).
+# Definimos a vizinhança pelo critério "Queen". A matriz de pesos é padronizada (estilo W).
 vizinhos <- poly2nb(glasgow_dados, queen = TRUE)
 pesos_espaciais <- nb2listw(vizinhos, style = "W")
 
 summary(vizinhos)
-
 
 # 7. QUESTÃO 4: Teste de Moran Global
 # O teste verifica se o padrão é aleatório, agrupado ou disperso.
 moran_global <- moran.test(glasgow_dados$preco, pesos_espaciais)
 moran_global
 
+# RESPOSTA DA QUESTÃO 4:
+# Com base no Teste de Moran Global, o Índice I obtido foi de 0,4497, com um p-valor inferior a 0,05. 
+# Portanto, rejeitamos a hipótese de aleatoriedade espacial. Conclui-se, com 95% de confiança, que os 
+# preços dos imóveis em Glasgow apresentam autocorrelação espacial positiva, indicando uma forte tendência de 
+# segregação espacial ou formação de clusters de preços semelhantes na cidade.
+
 # 8. QUESTÃO 5: AUTOCORRELAÇÃO LOCAL (LISA)
-# Diferente do teste global, o LISA (Local Indicators of Spatial Association) identifica exatamente onde estão os agrupamentos significativos.
-# Classificamos as áreas em clusters "Alto-Alto" (caros cercados por caros) e "Baixo-Baixo" (baratos cercados por baratos), além de identificar outliers espaciais.
+# O LISA identifica exatamente onde estão os agrupamentos significativos (clusters e outliers).
 tmap_mode("plot")
 
 # Cálculo do Moran Local
@@ -94,7 +98,7 @@ lag_precos_cent <- lag.listw(pesos_espaciais, precos_cent)
 
 # Criação das Categorias de Cluster
 glasgow_dados$cluster <- "Não Significante"
-significantes <- lisa_local[, 5] < 0.05 # Filtro de p-valor < 0.05
+significantes <- lisa_local[, 5] < 0.05 
 
 # Lógica de quadrantes (Moran Scatterplot)
 glasgow_dados$cluster[significantes & precos_cent > 0 & lag_precos_cent > 0] <- "Alto-Alto"
@@ -102,7 +106,7 @@ glasgow_dados$cluster[significantes & precos_cent < 0 & lag_precos_cent < 0] <- 
 glasgow_dados$cluster[significantes & precos_cent > 0 & lag_precos_cent < 0] <- "Alto-Baixo (Outlier)"
 glasgow_dados$cluster[significantes & precos_cent < 0 & lag_precos_cent > 0] <- "Baixo-Alto (Outlier)"
 
-# Visualização do Mapa de Clusters
+# Visualização do Mapa de Clusters LISA
 tm_shape(glasgow_dados) +
   tm_polygons(
     col = "cluster",
