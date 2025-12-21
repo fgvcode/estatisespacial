@@ -47,7 +47,7 @@ mapa_interativo
 
 # 5. QUESTÃO 3: MATRIZ DE VIZINHANÇA (CONTIGUIDADE QUEEN) -----------------
 vizinhos <- poly2nb(glasgow_dados, queen = TRUE)
-pesos_espaciais <- nb2listw(vizinhos, style = "W")
+pesos_espaciais <- nb2listw(vizinhos, style = "W") 
 
 summary(vizinhos)
 
@@ -57,18 +57,39 @@ moran_global <- moran.test(glasgow_dados$preco, pesos_espaciais)
 print(moran_global)
 
 # 7. QUESTÃO 5: AUTOCORRELAÇÃO LOCAL (LISA) -------------------------------
-lisa_local <- localmoran(glasgow_dados$preco, pesos_espaciais)
 
-# Adicionando p-valor ao mapa para destacar áreas significantes
-glasgow_dados$p_valor_local <- lisa_local[, 5]
+# Calculando Local Moran (LISA)
+local_moran <- localmoran(x = glasgow_dados$preco, pesos_espaciais)
 
-tmap_mode("plot")
-tm_shape(glasgow_dados) +
-  tm_polygons(
-    fill = "p_valor_local", 
-    fill.scale = tm_scale_intervals(breaks = c(0, 0.05, 1), values = c("red", "white")), 
-    fill.legend = tm_legend(title = "P-valor < 0.05")
-  ) +
-  tm_layout(main.title = "Q5: Clusters Significativos (LISA)", frame = FALSE)
+# Adicionando resultados ao shapefile
+glasgow_dados <- glasgow_dados |>
+  mutate(
+    Ii = local_moran[, "Ii"],             # Estatística local
+    Pr.Ii = local_moran[, "Pr(z != E(Ii))"]  # p-valor
+  )
+
+# Criando clusters LISA
+media_total <- mean(x = glasgow_dados$preco, na.rm = TRUE)
+preco_std <- scale(x = glasgow_dados$preco)[,1]
+lag_preco_std <- scale(x = lag.listw(recWQW, glasgow_dados$preco))[,1]
+
+glasgow_dados$LISA_cluster <- "Não significativo"          # Valor padrão
+glasgow_dados$LISA_cluster[preco_std > 0 & lag_preco_std > 0 & glasgow_dados$Pr.Ii <= 0.05] <- "Alto-Alto"
+glasgow_dados$LISA_cluster[preco_std < 0 & lag_preco_std < 0 & glasgow_dados$Pr.Ii <= 0.05] <- "Baixo-Baixo"
+glasgow_dados$LISA_cluster[preco_std > 0 & lag_preco_std < 0 & glasgow_dados$Pr.Ii <= 0.05] <- "Alto-Baixo"
+glasgow_dados$LISA_cluster[preco_std < 0 & lag_preco_std > 0 & glasgow_dados$Pr.Ii <= 0.05] <- "Baixo-Alto"
+
+# Mapa de clusters LISA
+ggplot(data = glasgow_dados) +
+  geom_sf(mapping = aes(fill = LISA_cluster), color = "gray50") +
+  scale_fill_manual(values = c(
+    "Alto-Alto" = "red",
+    "Baixo-Baixo" = "blue",
+    "Alto-Baixo" = "orange",
+    "Baixo-Alto" = "lightblue",
+    "Não significativo" = "gray80"
+  )) +
+  theme_minimal() +
+  labs(title = "Mapa LISA Local - Preço mediano", fill = "Cluster")
 
 # Final do Script
