@@ -14,7 +14,7 @@ Este repositório contém um projeto de estatística espacial desenvolvido para 
 
 A análise segue o seguinte fluxo estatístico:
 1. **Unificação de Dados:** Cruzamento entre dados censitários (Intermediate Zones) e preços de venda.
-2. **Matriz de Vizinhança:** Criação de matriz de contiguidade (Critério Queen).
+2. **Matriz de Vizinhança:** Criação de matriz de contiguidade (Critério Rook).
 3. **Moran Global:** Teste de hipótese para verificar se existe autocorrelação espacial (clumping) nos preços.
 4. **Moran Local (LISA):** Identificação de clusters espaciais (High-High, Low-Low).
 
