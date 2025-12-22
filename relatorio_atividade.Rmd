@@ -70,8 +70,8 @@ tm_shape(shp = glasgow_dados) +
   )
 
 # 6. QUESTÃO 3: MATRIZ DE VIZINHANÇA
-# Definimos a vizinhança pelo critério "Queen". A matriz de pesos é padronizada (estilo W).
-vizinhos <- poly2nb(glasgow_dados, queen = TRUE)
+# Definimos a vizinhança pelo critério "Rook", contiguidade com bordas comuns. A matriz de pesos é padronizada (estilo W).
+vizinhos <- poly2nb(glasgow_dados, queen = FALSE)
 pesos_espaciais <- nb2listw(vizinhos, style = "W")
 
 summary(vizinhos)
