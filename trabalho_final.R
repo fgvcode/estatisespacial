@@ -43,8 +43,8 @@ mapa_interativo <- tm_shape(glasgow_dados) +
 mapa_interativo
 
 # 5. QUESTÃO 3: MATRIZ DE VIZINHANÇA --------------------------------------
-# Criando lista de vizinhos (Queen) e matriz de pesos padronizada (W)
-vizinhos <- poly2nb(glasgow_dados, queen = TRUE)
+# Criando lista de vizinhos, critério de contiguidade de bordas comuns (Rook) e matriz de pesos padronizada (W)
+vizinhos <- poly2nb(glasgow_dados, queen = FALSE)
 pesos_espaciais <- nb2listw(vizinhos, style = "W")
 
 summary(vizinhos)
