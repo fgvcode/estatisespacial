@@ -131,4 +131,6 @@ Com base nas análises de estatística espacial realizadas sobre o mercado imobi
 * **Agrupamentos Locais (LISA):** Através do mapa de clusters, identificámos geograficamente os "hotspots" da cidade. Os clusters **Alto-Alto** indicam áreas de grande valorização, enquanto os **Baixo-Baixo** revelam setores com preços consistentemente menores.
 * **Relevância do Estudo:** A metodologia demonstra que a localização é um fator determinante na formação de preços em Glasgow, sendo uma ferramenta essencial para o planeamento urbano.
 
+Todo o trabalho encontra-se no Github: https://github.com/fgvcode/estatisespacial
+
 ---
