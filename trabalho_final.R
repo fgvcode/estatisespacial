@@ -54,14 +54,18 @@ summary(vizinhos)
 moran_global <- moran.test(glasgow_dados$preco, pesos_espaciais)
 print(moran_global)
 
-## --- RESPOSTA DA QUESTÃO 4 ---
-# Com base no Teste de Moran Global, o Índice I obtido foi de 0,4497, com um p-valor inferior a 0,05. 
-# Portanto, rejeitamos a hipótese de aleatoriedade espacial. Conclui-se, com 95% de confiança, que os 
-# preços dos imóveis em Glasgow apresentam autocorrelação espacial positiva, indicando uma forte tendência de 
-# segregação espacial ou formação de clusters de preços semelhantes na cidade.
+# Execução do teste de Moran para a variável 'preco'
+moran_global <- moran.test(glasgow_dados$preco, pesos_espaciais)
 
-# 7. QUESTÃO 5: AUTOCORRELAÇÃO LOCAL (LISA COLORIDO) ----------------------
-# Cálculo do Moran Local para identificação de clusters
+# Exibição dos resultados
+print(moran_global)
+##          RESPOSTA DA QUESTÃO 4
+#Com base no Teste de Moran Global, o Índice I obtido foi de 0,4497, com um p-valor inferior a 0,05. 
+#Portanto, rejeitamos a hipótese de aleatoriedade espacial. Conclui-se, com 95% de confiança, que os 
+#preços dos imóveis em Glasgow apresentam autocorrelação espacial positiva, indicando uma forte tendência de 
+#segregação espacial ou formação de clusters de preços semelhantes na cidade
+
+# 7. QUESTÃO 5: AUTOCORRELAÇÃO LOCAL (LISA) -------------------------------
 lisa_local <- localmoran(glasgow_dados$preco, pesos_espaciais)
 
 # Lógica para categorização dos quadrantes do Moran Scatterplot
