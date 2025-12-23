@@ -21,14 +21,10 @@ Neste relatório, apresentamos a análise espacial dos preços de propriedades e
 Nesta seção, realizamos o carregamento do ambiente técnico, a unificação das bases de dados e a execução de todos os testes estatísticos e mapas solicitados.
 
 ```{r processamento_total, echo=TRUE, message=FALSE, warning=FALSE}
-# 1. CARREGAMENTO DE BIBLIOTECAS
-library(sf)          
-library(readxl)
-library(dplyr)       
-library(ggplot2)     
-library(tmap)
-library(stringr)
-library(spdep) 
+
+# 1. CARREGAMENTO DE BIBLIOTECAS (COM INSTALAÇÃO AUTOMÁTICA)
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(sf, readxl, dplyr, ggplot2, tmap, stringr, spdep)
 
 # 2. IMPORTAÇÃO DOS DADOS
 # Nota: Certifique-se de que a pasta 'dados/' contém o Shapefile e o Excel
