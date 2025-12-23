@@ -14,8 +14,7 @@ pacman::p_load(sf, readxl, dplyr, tmap, spdep, stringr, ggplot2)
 prices_df  <- read_excel("dados/base preco propriedade.xlsx")
 glasgow_sf <- st_read("dados/Glasgow.shp", quiet = TRUE)
 
-# Unificação (Join) garantindo a manutenção da classe 'sf'
-# Shapefile à esquerda (x) garante que o resultado herde a geometria automaticamente
+# Join garantindo a manutenção da geometria (sf)
 glasgow_dados <- left_join(x = glasgow_sf, y = prices_df, by = "IZ") %>% 
   mutate(rotulo = str_c(name, " - £", preco))
 
@@ -37,15 +36,14 @@ mapa_interativo <- tm_shape(glasgow_dados) +
   tm_polygons(
     fill = "preco", 
     fill.scale = tm_scale_intervals(style = "quantile", n = 8, values = "matplotlib.blues"),
-    fill.legend = tm_legend(title = "Preço Mediano"),
     id = "rotulo", 
-    popup.vars = c("Área" = "name", "Preço" = "preco"),
-    lwd = 0.25
+    popup.vars = c("Área" = "name", "Preço" = "preco")
   )
 
 mapa_interativo
 
-# 5. QUESTÃO 3: MATRIZ DE VIZINHANÇA (CONTIGUIDADE QUEEN) -----------------
+# 5. QUESTÃO 3: MATRIZ DE VIZINHANÇA --------------------------------------
+# Criando lista de vizinhos (Queen) e matriz de pesos padronizada (W)
 vizinhos <- poly2nb(glasgow_dados, queen = TRUE)
 pesos_espaciais <- nb2listw(vizinhos, style = "W")
 
@@ -70,16 +68,29 @@ print(moran_global)
 # 7. QUESTÃO 5: AUTOCORRELAÇÃO LOCAL (LISA) -------------------------------
 lisa_local <- localmoran(glasgow_dados$preco, pesos_espaciais)
 
-# Adicionando p-valor ao mapa para destacar áreas significantes
-glasgow_dados$p_valor_local <- lisa_local[, 5]
+# Lógica para categorização dos quadrantes do Moran Scatterplot
+precos_cent <- glasgow_dados$preco - mean(glasgow_dados$preco)
+lag_precos_cent <- lag.listw(pesos_espaciais, precos_cent)
+
+glasgow_dados$cluster <- "Não Significante"
+significantes <- lisa_local[, 5] < 0.05
+
+glasgow_dados$cluster[significantes & precos_cent > 0 & lag_precos_cent > 0] <- "Alto-Alto"
+glasgow_dados$cluster[significantes & precos_cent < 0 & lag_precos_cent < 0] <- "Baixo-Baixo"
+glasgow_dados$cluster[significantes & precos_cent > 0 & lag_precos_cent < 0] <- "Alto-Baixo (Outlier)"
+glasgow_dados$cluster[significantes & precos_cent < 0 & lag_precos_cent > 0] <- "Baixo-Alto (Outlier)"
 
 tmap_mode("plot")
-tm_shape(glasgow_dados) +
+mapa_lisa <- tm_shape(glasgow_dados) +
   tm_polygons(
-    fill = "p_valor_local", 
-    fill.scale = tm_scale_intervals(breaks = c(0, 0.05, 1), values = c("red", "white")), 
-    fill.legend = tm_legend(title = "P-valor < 0.05")
+    col = "cluster",
+    palette = c("Alto-Alto" = "#d7191c", "Baixo-Baixo" = "#2c7bb6", 
+                "Alto-Baixo (Outlier)" = "#fdae61", "Baixo-Alto (Outlier)" = "#abd9e9", 
+                "Não Significante" = "white"),
+    title = "Clusters LISA"
   ) +
-  tm_layout(main.title = "Q5: Clusters Significativos (LISA)", frame = FALSE)
+  tm_layout(main.title = "Q5: Mapa de Clusters LISA", frame = FALSE)
+
+print(mapa_lisa)
 
 # Final do Script

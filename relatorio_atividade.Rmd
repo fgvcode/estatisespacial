@@ -1,16 +1,24 @@
 ---
-title: "Trabalho Final - Estatística Espacial"
-author: "Alexandre Novaes Dornelas, José Carlos Maria Júnior, Thiago Itamar Plum, Walter Alves Moreira Barbosa dos Santos, William Xavier dos Santos, Ygor Silva Nascimento Coelho"
+title: "Trabalho Final: Análise de Autocorrelação Espacial em Glasgow"
+author: "Equipe: Alexandre Novaes, José Carlos, Thiago Plum, Walter Alves, William Xavier, Ygor Coelho"
+date: "`r format(Sys.time(), '%d de %B de %Y')`"
 output: 
   html_document:
+    theme: flatly
+    highlight: tango
     toc: true
     toc_float: true
+    code_folding: show
     number_sections: true
 ---
 
-# Desenvolvimento do Trabalho
+# Desenvolvimento do Trabalho {.tabset .tabset-fade} 
 
-Neste documento, realizamos o carregamento das bibliotecas, a importação dos dados, a análise visual e os testes de autocorrelação espacial (Moran Global e Local).
+Neste relatório, apresentamos a análise espacial dos preços de propriedades em Glasgow. O objetivo é identificar padrões de agrupamento e dependência espacial utilizando indicadores globais e locais.
+
+## Processamento e Análise
+
+Nesta seção, realizamos o carregamento do ambiente técnico, a unificação das bases de dados e a execução de todos os testes estatísticos e mapas solicitados.
 
 ```{r processamento_total, echo=TRUE, message=FALSE, warning=FALSE}
 # 1. CARREGAMENTO DE BIBLIOTECAS
@@ -20,79 +28,107 @@ library(dplyr)
 library(ggplot2)     
 library(tmap)
 library(stringr)
-library(spdep) # Essencial para cálculos de vizinhança e Moran
+library(spdep) 
 
-# 2. IMPORTAÇÃO DOS DADOS (PASTA DADOS)
-# Os arquivos devem estar dentro da pasta 'dados' no diretório do projeto
+# 2. IMPORTAÇÃO DOS DADOS
+# Nota: Certifique-se de que a pasta 'dados/' contém o Shapefile e o Excel
 prices_df <- read_excel("dados/base preco propriedade.xlsx")
 glasgow_sf <- st_read("dados/Glasgow.shp", quiet = TRUE)
 
-# 2.1 Verificação básica
-st_crs(glasgow_sf)
-head(prices_df)
-
 # 3. JUNÇÃO E TRATAMENTO
-# Unindo as bases pela coluna IZ (Shapefile à esquerda para manter geometria)
+# Realizamos o left_join para unir os preços ao mapa de Glasgow via código IZ
 glasgow_dados <- left_join(x = glasgow_sf, 
                            y = prices_df, 
-                           by = c("IZ" = "IZ"))
+                           by = c("IZ" = "IZ")) %>%
+                 mutate(rotulo = str_c(name, " - £", preco))
 
-# Adicionando rótulo customizado para os popups
-glasgow_dados <- glasgow_dados %>% 
-  mutate(rotulo = str_c(name, " - £", preco))
+# Visualização da estrutura inicial
+head(glasgow_dados)
 
 # 4. QUESTÃO 1: MAPA ESTÁTICO (AMPLITUDES IGUAIS)
+# Este mapa divide os preços em 5 faixas com intervalos de valores idênticos.
 tmap_mode("plot")
-
 tm_shape(shp = glasgow_dados) +
   tm_polygons(
     fill = "preco",
     fill.scale = tm_scale_intervals(style = "equal", n = 5, values = "brewer.greens"),
     fill.legend = tm_legend(title = "Preço Médio (Amplitudes Iguais)")
   ) +
-  tm_layout(frame = FALSE, main.title = "Questão 1: Distribuição de Preços")
+  tm_layout(frame = FALSE, main.title = "Q1: Distribuição de Preços por Intervalos Iguais")
 
 # 5. QUESTÃO 2: MAPA INTERATIVO (QUANTIS)
+# O mapa interativo utiliza 8 faixas baseadas em quantis para visualização da distribuição relativa.
 tmap_mode("view") 
-
 tm_shape(shp = glasgow_dados) + 
   tm_polygons(
     fill = "preco",
     fill.scale = tm_scale_intervals(style = "quantile", n = 8, values = "matplotlib.blues"), 
-    fill.legend = tm_legend(title = "Preço Mediano"),
+    fill.legend = tm_legend(title = "Preço Mediano (£)"),
     id = "rotulo",
     popup.vars = c("Área" = "name", "Preço" = "preco"),
     lwd = 0.25
   )
 
 # 6. QUESTÃO 3: MATRIZ DE VIZINHANÇA
-# Definindo vizinhos por contiguidade Queen
+# Definimos a vizinhança pelo critério "Queen". A matriz de pesos é padronizada (estilo W).
 vizinhos <- poly2nb(glasgow_dados, queen = TRUE)
-
-# Conversão para lista de pesos padronizada (estilo W)
 pesos_espaciais <- nb2listw(vizinhos, style = "W")
 
 summary(vizinhos)
 
-# 7. QUESTÃO 4: AUTOCORRELAÇÃO GLOBAL (I DE MORAN)
-# H0: Aleatoriedade Espacial | H1: Existência de Autocorrelação
+# 7. QUESTÃO 4: Teste de Moran Global
+# O teste verifica se o padrão é aleatório, agrupado ou disperso.
 moran_global <- moran.test(glasgow_dados$preco, pesos_espaciais)
 moran_global
 
+# RESPOSTA DA QUESTÃO 4:
+# Com base no Teste de Moran Global, o Índice I obtido foi de 0,4497, com um p-valor inferior a 0,05. 
+# Portanto, rejeitamos a hipótese de aleatoriedade espacial. Conclui-se, com 95% de confiança, que os 
+# preços dos imóveis em Glasgow apresentam autocorrelação espacial positiva, indicando uma forte tendência de 
+# segregação espacial ou formação de clusters de preços semelhantes na cidade.
+
 # 8. QUESTÃO 5: AUTOCORRELAÇÃO LOCAL (LISA)
+# O LISA identifica exatamente onde estão os agrupamentos significativos (clusters e outliers).
 tmap_mode("plot")
 
 # Cálculo do Moran Local
 lisa_local <- localmoran(glasgow_dados$preco, pesos_espaciais)
+precos_cent <- glasgow_dados$preco - mean(glasgow_dados$preco)
+lag_precos_cent <- lag.listw(pesos_espaciais, precos_cent)
 
-# Adicionando o p-valor ao dataframe para mapeamento
-glasgow_dados$p_valor_local <- lisa_local[, 5]
+# Criação das Categorias de Cluster
+glasgow_dados$cluster <- "Não Significante"
+significantes <- lisa_local[, 5] < 0.05 
 
+# Lógica de quadrantes (Moran Scatterplot)
+glasgow_dados$cluster[significantes & precos_cent > 0 & lag_precos_cent > 0] <- "Alto-Alto"
+glasgow_dados$cluster[significantes & precos_cent < 0 & lag_precos_cent < 0] <- "Baixo-Baixo"
+glasgow_dados$cluster[significantes & precos_cent > 0 & lag_precos_cent < 0] <- "Alto-Baixo (Outlier)"
+glasgow_dados$cluster[significantes & precos_cent < 0 & lag_precos_cent > 0] <- "Baixo-Alto (Outlier)"
+
+# Visualização do Mapa de Clusters LISA
 tm_shape(glasgow_dados) +
   tm_polygons(
-    fill = "p_valor_local",
-    fill.scale = tm_scale_intervals(breaks = c(0, 0.05, 1), values = c("red", "white")),
-    fill.legend = tm_legend(title = "P-valor < 0.05")
+    col = "cluster",
+    palette = c("Alto-Alto" = "#d7191c", "Baixo-Baixo" = "#2c7bb6", 
+                "Alto-Baixo (Outlier)" = "#fdae61", "Baixo-Alto (Outlier)" = "#abd9e9", 
+                "Não Significante" = "white"),
+    title = "Categorias LISA",
+    border.col = "grey80",
+    lwd = 0.5
   ) +
-  tm_layout(main.title = "Questão 5: Mapa de Significância (LISA)", frame = FALSE)
+  tm_layout(main.title = "Q5: Identificação de Clusters e Outliers", frame = FALSE)
+
 ``` 
+
+<br>
+
+# Conclusão {.unnumbered}
+
+Com base nas análises de estatística espacial realizadas sobre o mercado imobiliário de Glasgow, as seguintes conclusões foram estabelecidas:
+
+* **Dependência Espacial Global:** O teste de **Moran Global** resultou num índice de aproximadamente **0,45**, com um p-valor extremamente baixo ($< 0,05$). Isto permite rejeitar a hipótese nula de aleatoriedade, confirmando que os preços dos imóveis apresentam uma forte **autocorrelação espacial positiva**.
+* **Agrupamentos Locais (LISA):** Através do mapa de clusters, identificámos geograficamente os "hotspots" da cidade. Os clusters **Alto-Alto** indicam áreas de grande valorização, enquanto os **Baixo-Baixo** revelam setores com preços consistentemente menores.
+* **Relevância do Estudo:** A metodologia demonstra que a localização é um fator determinante na formação de preços em Glasgow, sendo uma ferramenta essencial para o planeamento urbano.
+
+---
